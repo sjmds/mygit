@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>数据结构与算法-算法补充</title>
+</head>
+
+<body>
+    <h1>数据结构与算法-算法补充</h1>
+</body>
+<script>
+ // 斐波那契数
+ function fibonacci(num){
+    if(num===1||num===2){
+        return 1;
+    }
+    return fibonacci(num-1)+fibonacci(num-2);
+ };
+ console.log(fibonacci(6));
+
+ function fib(num){
+    var n1=1,
+        n2=1,
+        n=1;
+    for(var i=3;i<=num;i++){
+        n=n1+n2;
+        n1=n2;
+        n2=n;
+    }
+    return n;
+ };
+ console.log(fib(6));
+
+ // 最少硬币找零问题
+ // 动态规划
+ function MinCoinChange(coins){
+    var coins=coins;
+    var cache={};
+    this.makeChange=function(amount){
+        var me=this;
+        if(!amount){
+            return []; 
+        }
+        if(cache[amount]){
+            return cache[amount];
+        }
+        var min=[],newMin,newAmount;
+        for (var i = 0; i < coins.length; i++) {
+            var coin=coins[i];
+            newAmount=amount-coin;
+            if(newAmount>=0){
+                newMin=me.makeChange(newAmount);
+            }
+            if(
+                newAmount>=0
+                &&(newMin.length<min.length-1||!min.length)
+                &&(newMin.length||!newAmount)
+                ){
+                min=[coin].concat(newMin);
+                console.log('new Min '+min+' for '+amount);
+            }
+        }
+        return (cache[amount]=min);
+    };
+};
+var minCoinChange = new MinCoinChange([1, 5, 10, 25]);
+console.time();
+console.log(minCoinChange.makeChange(36));
+console.timeEnd();
+// 贪心算法
+function mMinCoinChange(coins){
+    var coins=coins;
+    this.makeChange=function(amount){
+        var change=[],
+            total=0;
+        for (var i = coins.length; i >= 0; i--) {
+            var coin=coins[i];
+            while(total+coin<=amount){
+                change.push(coin);
+                total+=coin;
+            }
+        }
+        return change;
+    };
+};
+var mminCoinChange = new mMinCoinChange([1, 5, 10, 25]);
+console.time();
+console.log(mminCoinChange.makeChange(36));
+console.timeEnd();
+// 顺序搜索
+function sequentialSearch(array, item){
+    var cost = 0;
+    for (var i=0; i<array.length; i++){
+        cost++;
+        if (item === array[i]){
+            return i;
+        }
+    }
+    console.log('cost for sequentialSearch with input size ' + array.length + ' is ' + cost);
+    return -1;
+}
+
+function createNonSortedArray(size) {
+    var array =[];
+    for (var i = size; i > 0; i--) {
+        array.push(parseInt(i * 10 * Math.random()));
+    }
+    return array;
+};
+var array = createNonSortedArray(15);
+// 冒泡排序
+function swap(array, index1, index2){
+    var aux = array[index1];
+    array[index1] = array[index2];
+    array[index2] = aux;
+}
+function bubbleSort(array){
+    var length = array.length;
+    for (var i=0; i<length; i++){
+        for (var j=0; j<length-1; j++ ){ 
+            if (array[j] > array[j+1]){
+                swap(array, j, j+1);
+            }
+        }
+    }
+}
+function bbubbleSort(array){
+    var length = array.length;
+    var cost = 0;
+    for (var i=0; i<length; i++){ //{1}
+        cost++;
+        for (var j=0; j<length-1; j++ ){ //{2}
+            cost++;
+            if (array[j] > array[j+1]){
+                swap(array, j, j+1);
+            }
+        }
+    }
+    console.log('cost for bubbleSort with input size ' + length + ' is ' + cost);
+}
+
+// 快速排序法
+
+function quicksort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    var left = [];
+    var right = [];
+    var middle = arr[0];
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] < middle) {
+            left.push(arr[i]);
+        } else {
+            right.push(arr[i]);
+        }
+    }
+    return quicksort(left).concat([middle], quicksort(right));
+};
+console.log('quicksort')
+console.time();
+console.log(quicksort(array))
+console.timeEnd();
+// 数组去重
+Array.prototype.unique = function(){
+    var res = [];
+    var json = {};
+    for(var i = 0; i < this.length; i++){
+        if(!json[this[i]]){
+            res.push(this[i]); 
+            json[this[i]] = 0;           
+        }
+        json[this[i]] += 1;
+        
+    }
+    return {res:res,json:json};
+}
+var arr = [112,112,34,'你好',112,112,34,'你好','str','str1'];
+console.log('数组去重')
+console.time();
+console.log(arr.unique());
+console.timeEnd();
+// 获取字符串里出现子串的位置
+function appear(str,str_target){
+    var n = 0;
+    var result = [];
+    while(str.indexOf(str_target,n)!=-1 && n < str.length){
+        result.push(str.indexOf(str_target,n));
+        n = str.indexOf(str_target,n) + str_target.length;
+    }
+    return result;
+}
+
+console.log('获取字符串里出现子串的位置')
+console.time();
+var arr1 = appear('bbascbascbabasbascbascascbab','ab');
+console.log(arr1);
+console.timeEnd();
+// 不确定数量的数组遍历组合算法
+function group(arr,re){
+    if(arr.length <=0){
+        return re;
+    }
+    if(!re){
+        var arr = arr.slice();
+        var re = arr.shift();
+        return group(arr,re);
+    }else{
+        var now = arr.shift();
+        var newre = [];
+        for(var j=0;j<now.length;j++){
+            for(var k=0;k<re.length;k++){
+                var temp = [];
+                if(re[k] instanceof Array){
+                    temp = re[k];
+                }else{
+                    temp.push(re[k]);
+                }
+                newre.push(temp.concat(now[j]));
+            }
+        }
+        return group(arr,newre);
+    }
+};
+var arr2 = [['a','b','c'],['e','d','f'],['h','i'],['j','k','l','m']];
+var arr3 = [];
+console.log('不确定数量的数组遍历组合算法')
+console.time();
+var result = group(arr2);
+console.log(result); 
+console.timeEnd();
+// 编写一个函数fn(Number n),将数字转为大写输出，如输入123，输出一百二十三。
+function fn(n){
+    if(!/^([1-9]\d*)/.test(n)){
+        return '非法数据';
+    }
+    var unit = '千百十亿千百十万千百十个';
+    if(n.length > unit.length){
+        return '数据过长';
+    }
+    var newStr = '';
+    var nlength = n.length;
+    unit = unit.substr(unit.length - nlength);
+    for(var i = 0; i < nlength; i++){
+        newStr += '零一二三四五六七八九'.charAt(n[i]) + unit.charAt(i);
+    }  
+    console.log(newStr)     
+    newStr = newStr.substr(0,newStr.length-1);
+    newStr = newStr.replace(/零(千|百|十)/g,'零').replace(/(零)+/g,'零').replace(/零(亿|万)/g,'$1');
+    return newStr;
+};
+console.log('将数字转为大写输出')
+console.log(fn('205402002103'));
+var _str='二千零百五十四亿零千二百零十零万二千一百零十三';
+var _str1=_str.replace(/零(千|百|十|亿|万)/g,function(word,$1,$2,$3){
+    console.log(word,$1,$2,$3)
+});
+console.log(_str1)
+// 所有单词的首字母都转换为大写
+var name = 'aaa bbb ccc';
+var uw=name.replace(/\b\w+\b/g, function(word,$1,$2,$3){    
+    console.log(word+','+$1+','+$2+','+$3)
+    return word.substring(0,1).toUpperCase()+word.substring(1);
+});
+
+console.log(uw)
+// 如何将浮点数左边的数每三位添加逗号
+var _num=1200000.11;
+var _num1 = _num && _num.toString().replace(/(\d)(?=(\d{3})+\.)/g,function($1,$2){
+    console.log($1,$2)
+    return $2 + ',';
+});
+console.log(_num1)
+</script>
+</html>
